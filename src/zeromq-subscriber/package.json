@@ -1,0 +1,30 @@
+{
+  "name": "zeromq-subscriber",
+  "version": "0.0.1",
+  "description": "eddn.edcd.io ZeroMQ Event Subscriber and RabbitMQ Relay",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tkjode/eddn-stack.git"
+  },
+  "keywords": [
+    "elite",
+    "dangerous",
+    "eddn"
+  ],
+  "author": "Jody Reid",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tkjode/eddn-stack/issues"
+  },
+  "homepage": "https://github.com/tkjode/eddn-stack#readme",
+  "dependencies": {
+    "amqplib": "^0.10.3",
+    "prom-client": "^14.1.0",
+    "zeromq": "^5.2.8",
+    "zlib": "^1.0.5"
+  }
+}

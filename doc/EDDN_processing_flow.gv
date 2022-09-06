@@ -1,0 +1,80 @@
+digraph EDDN {
+  rankdir=LR;
+  node[style=filled fillcolor="#90A0B0"];
+  edge[color=blue];
+  style=filled; fontname="Arial"
+  label="EDDN Data Management";
+
+  subgraph cluster_sources {
+    label="Sources";
+
+    eddn[label="eddn.edcd.io ZeroMQ" shape=folder];
+    dumpFile[label="DumpFile" shape=folder];
+  }
+  
+  subgraph cluster_eddnIntake {
+    label="EDDN Intake";
+
+    nodejs_zeromq_subscriber;
+    
+    rabbitmq_router[shape=Mrecord label="*routing_key|<Journal>Journal|<Scan>Scan|<Market>Market|<Other>Other..."];
+
+    nodejs_JournalProcessor
+    nodejs_ScanProcessor
+    nodejs_MarketProcessor
+    
+
+    rabbitmq_router:Journal->nodejs_JournalProcessor;
+    rabbitmq_router:Scan->nodejs_ScanProcessor;
+    rabbitmq_router:Market->nodejs_MarketProcessor;
+    
+
+    nodejs_zeromq_subscriber->rabbitmq_router;
+  }
+
+  eddn->nodejs_zeromq_subscriber;
+
+  subgraph cluster_actionQueues {
+    label="Action Queues"
+    rabbitmq_actionqueues[shape=Mrecord label="RabbitMQ|<drop>DropMsg|<log>LogMsg|<detect>DetectChange|<index>IndexMsg|<remap>Remap"]
+  }
+
+  nodejs_JournalProcessor->rabbitmq_actionqueues:detect;  
+  nodejs_JournalProcessor->rabbitmq_actionqueues:remap;
+  nodejs_ScanProcessor->rabbitmq_actionqueues:detect;
+  nodejs_ScanProcessor->rabbitmq_actionqueues:index;
+  nodejs_MarketProcessor->rabbitmq_actionqueues:index;  
+
+  subgraph cluster_dumpIntake {
+    label="Data Dump Intake";
+
+    rabbitmq_dumpqueueRouter;
+
+    nodejs_JournalScraper;
+    nodejs_ScanScraper;
+    nodejs_MarketScraper;    
+  }
+
+  dumpFile->rabbitmq_dumpqueueRouter;
+  rabbitmq_dumpqueueRouter->nodejs_JournalScraper->elastic_indexer;
+  rabbitmq_dumpqueueRouter->nodejs_ScanScraper->elastic_indexer;
+  rabbitmq_dumpqueueRouter->nodejs_MarketScraper->elastic_indexer;
+
+  subgraph cluster_Elastic {
+    label="Elastic Store";
+    elastic_indexer[shape=cylinder];    
+  }
+
+  rabbitmq_actionqueues:index->elastic_indexer;
+  rabbitmq_actionqueues:detect->elastic_indexer[label="?" dir=both];
+
+  subgraph cluster_Display {
+    label="Presentation"
+    grafana;
+    kibana;    
+  }
+
+  elastic_indexer->grafana[dir=both];
+  elastic_indexer->kibana[dir=both];
+
+}
