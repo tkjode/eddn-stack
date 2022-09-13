@@ -1,0 +1,102 @@
+<HTML>
+  <HEAD>
+    <TITLE>
+      Tiny Table with Vertical Table Title Sidebar Preview
+    </TITLE>
+    <STYLE>
+      TABLE.tinyTable  {
+        position: absolute;
+        font-size: 12px;
+        font-family: Monospace;
+        border-style: solid;
+        border-color: darkgrey;
+        border-width: 1px;
+        margin: 2px;
+        padding: 0px;
+      }
+
+
+
+      .tinyTable CAPTION {
+        font-weight: bold;
+        caption-side: top;
+
+        padding-top: 2px;
+        padding-bottom: 2px;
+        padding-left: 2px;
+        padding-right: 5px;
+
+        border-style: solid;
+        border-width: 1px;
+        border-color: darkgrey;
+        background-color: greenyellow;
+      }
+
+      .tinyTable TD {
+        color: red;
+        padding: 2px;
+        border-spacing: 0px;
+        border-width: 1px;
+        border-style: solid;
+      }
+
+      .tinyTable TR {
+        border-spacing: 0px;
+        margin: 0;
+        padding: 0;
+      }
+
+      DIV.draggable {
+        display: inline-flexbox;
+
+      }
+
+    </STYLE>
+  </HEAD>
+  <BODY>
+    <div class="draggable">
+      <TABLE class="tinyTable">
+        <CAPTION>Ese Buj</CAPTION>
+        <THEAD>
+          <TD>Faction</TD>
+          <TD>INF</TD>
+          <TD>States</TD>
+        </THEAD>
+        <TBODY>
+          <TR><TD>STAB</TD><TD>39.5%</TD><TD><DIV class='boomstate'>Boom</DIV></TD></TR>
+        </TBODY>
+      </TABLE>
+    </div>
+
+    <div class="draggable">
+      <TABLE style='top: 100px' class="tinyTable">
+        <CAPTION>Ese Buj</CAPTION>
+        <THEAD>
+          <TD>
+            Faction
+          </TD>
+          <TD>
+            INF
+          </TD>
+          <TD>
+            States
+          </TD>
+        </THEAD>
+        <TBODY>
+          <TR>
+            <TD>
+              STAB
+            </TD>
+            <TD>
+              39.5%
+            </TD>
+            <TD>
+              <DIV class='boomstate'>Boom</DIV>
+            </TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+    </div>
+
+  </BODY>
+</HTML>
