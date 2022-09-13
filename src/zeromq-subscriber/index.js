@@ -1,21 +1,24 @@
-if(require.main === module) { 
+if(require.main === module) {
   main();
 }
 
-function main() { 
+function main() {
   const metrics = require("prom-client");
 
   const ZMQENDPOINT=process.env.ZMQENDPOINT || "tcp://eddn.edcd.io:9500";
   const AMQPENDPOINT=process.env.AMQPENDPOINT || "localhost:9090";
+  const AMQPUSERNAME=process.env.RABBITMQ_DEFAULT_USER || "unspecified";
+  const AMQPPASSWORD=process.env.RABBITMQ_DEFAULT_PASS || "unspecified";
 
   console.log("Connecting as producer to RabbitMQ...");
   const amqp = require("amqplib");
-  var amqpConnection = amqp.connect("amqp://localhost", (err, connection) => { if (err) { exit(128); } else { console.log("AMQP Connected."); return connection; } })
+
+  const amqpOpts = { credentials: amqp.credentials.plain(AMQPUSERNAME, AMQPPASSWORD) };
+
+  var amqpConnection = amqp.connect("amqp://" + AMQPENDPOINT, amqpOpts, (err, connection) => { if (err) { exit(128); } else { console.log("AMQP Connected."); return connection; } })
 
   console.log("ØMQ Subscriber Starting...");
   streamEvents(ZMQENDPOINT);
-
-  
 
   return 0;
 }
@@ -42,14 +45,14 @@ function streamEvents(endpoint, topic='') {
 }
 
 
-function hnd_zmq_onMessage(message) {  
+function hnd_zmq_onMessage(message) {
   const zlib = require("zlib");
   console.log("ZMQ Raw Message: " + message.toString().length + " bytes received");
   zlib.inflate(message, hnd_decompressed_msg)
 }
 
-function hnd_decompressed_msg(err, buf) { 
-  if (err) { 
+function hnd_decompressed_msg(err, buf) {
+  if (err) {
     console.log("ERROR, skipping: " + err);
   } else {
     console.log("Decompressed Message: " + buf.toString().length + " bytes");

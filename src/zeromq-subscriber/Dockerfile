@@ -1,9 +1,9 @@
-FROM node:18.9-slim
+FROM node:18.9
 
 WORKDIR /app
 
-COPY ../src/zeromq-subscriber/package*.json ./
-COPY ../src/zeromq-subscriber/index.js .
+COPY package*.json ./
+COPY index.js ./
 
 RUN npm install
 

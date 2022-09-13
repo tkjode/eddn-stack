@@ -1,10 +1,29 @@
 version: '3'
 
+# .env stack variables:
+# ---------------------
+#  EDDN_STACK_QUEUE_HOSTNAME:  Hostname of Initial EDDN ZeroMQ Subscriber-AMQP Router
+# EDDN_STACK_ZEROMQ_HOSTNAME:  Hostname of Initial EDDN ZeroMQ Subscriber-AMQP Router
+#      RABBITMQ_DEFAULT_USER:  AMQP Plain Auth Username
+#      RABBITMQ_DEFAULT_PASS:  AMQP Plain Auth Password
+#    RABBITMQ_CONTAINER_PORT:  AMQP Container Connection Port
+
 services:
   rabbitmq:
     image: rabbitmq:3
-    container_name: amqp
-    hostname: eddn-rabbit
+    container_name: rabbitmq
+    hostname: ${EDDN_STACK_QUEUE_HOSTNAME:-rabbit}
     ports:
-      - 5672:5672
-    env_file: ".env"   # Git-Ignored, please generate a secure RABBITMQ_DEFAULT_USER and RABBITMQ_DEFAULT_PASS along with this compose file
+      - 5672:${RABBITMQ_CONTAINER_PORT:-5672}
+    env_file: ".env"
+
+  eddn_subscriber:
+    image: tkjode/eddn-zeromq-router:0.0.1
+    container_name: eddn-zeromq-router
+    hostname: ${EDDN_STACK_ZEROMQ_HOSTNAME:-zmq}
+    restart: unless-stopped
+    environment:
+      AMQPENDPOINT: ${EDDN_STACK_QUEUE_HOSTNAME:-rabbit}:${RABBITMQ_CONTAINER_PORT:-5672}
+    env_file: ".env"
+    depends_on:
+      - rabbitmq
